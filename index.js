@@ -56,7 +56,7 @@ async function run() {
             })
         }
         // use verify admin after verify token
-       
+
 
 
         app.get('/users/admin/:email', async (req, res) => {
@@ -114,6 +114,12 @@ async function run() {
         // get the all menu data form the database
         app.get('/menu', async (req, res) => {
             const result = await menuCollection.find().toArray()
+            res.send(result)
+        })
+
+        app.post('/menu', async (req, res) => {
+            const menu = req.body;
+            const result = await menuCollection.insertOne(menu);
             res.send(result)
         })
         // get the reviews data from the database
