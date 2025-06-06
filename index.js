@@ -112,6 +112,13 @@ async function run() {
         })
 
         // get the all menu data form the database
+        app.delete('/menu/:id', verifyToken,async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await menuCollection.deleteOne(query);
+            res.send(result)
+        })
+
         app.get('/menu', async (req, res) => {
             const result = await menuCollection.find().toArray()
             res.send(result)
