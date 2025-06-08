@@ -26,7 +26,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
         const userCollection = client.db("bistroDB").collection("users");
         const menuCollection = client.db("bistroDB").collection("menu");
         const reviewsCollection = client.db("bistroDB").collection("reviews");
@@ -55,6 +55,7 @@ async function run() {
                 next()
             })
         }
+
         // use verify admin after verify token
 
 
@@ -92,8 +93,23 @@ async function run() {
             res.send(result)
         })
 
+        // payment intent
+        // app.post('/create-payment-intent', async (req, res) => {
+        //     const { price } = req.body;
+        //     const amount = parseInt(price * 100)
+
+        //     const paymentIntent = await stripe.paymentIntents.create({
+        //         amount: amount,
+        //         currency: 'usd',
+        //         payment_method_type: ['card']
+        //     })
+        //     res.send({
+        //         clientSecret: paymentIntent.client_secret
+        //     })
+        // })
+
         // get the users from the database
-        app.get('/users', verifyToken, async (req, res) => {
+        app.get('/users', async (req, res) => {
             // console.log('Here is the inside token:', req.headers)
             const result = await userCollection.find().toArray()
             res.send(result)
@@ -112,15 +128,23 @@ async function run() {
         })
 
         // get the all menu data form the database
-        app.delete('/menu/:id', verifyToken,async (req, res) => {
+        app.delete('/menu/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await menuCollection.deleteOne(query);
             res.send(result)
         })
 
+        app.get('/menu/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await menuCollection.findOne(query)
+            res.send(result)
+        })
+
         app.get('/menu', async (req, res) => {
-            const result = await menuCollection.find().toArray()
+            const query = req.body;
+            const result = await menuCollection.find(query).toArray()
             res.send(result)
         })
 
@@ -162,8 +186,8 @@ async function run() {
 
 
         // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+        // await client.db("admin").command({ ping: 1 });
+        // console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
         // await client.close();
